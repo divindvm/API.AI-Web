@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+	<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="css/custom_stylesheet.css">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+
+   
+    <!-- fontawesome icons -->
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+<!-- 
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/bootstrap.js"></script>
+ -->
+
+    <!-- jquerry  avascript -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+	<title> CHAT BOT </title>
+
+    <script type="text/javascript">
+
+
+
+            var accessToken = "fd77226953b545c6a92f894499231ad1";
+            var baseUrl = "https://api.api.ai/v1/";
+
+
+
+        
+            function myFunction(text_message) {
+                var x = document.getElementById('response');
+                if (x.style.display === 'none') {
+                    x.style.display = 'block';
+                    var tex=text_message;
+                    showText("#response", tex , 0, 30); 
+                    lodingCompleted();
+                } else {
+                    x.style.display = 'none';
+                }
+
+
+                
+            } 
+
+            function lodingCompleted(){
+
+                pic.src = "image/normal.gif";
+                document.getElementById("speech").disabled = false;
+                document.getElementById("speech").focus();
+            }
+
+
+
+            var showText = function (target, message, index, interval) {   
+              if (index < message.length) {
+
+                $(target).append(message[index++]);
+                setTimeout(function () { showText(target, message, index, interval); }, interval);
+              }
+
+
+            }
+
+
+            //--------------------------Api.AI Portion------------------------------------------------------------
+
+
+                  function initElement() {
+                   
+
+
+                    $speechInput = $("#speech");
+                    $speechOutput =$("#response");
+                    var pic = document.getElementById('pic');
+                    var message_back = document.getElementById('response');
+
+
+                  $speechInput.keypress(function(event) {
+                    if (event.which == 13) {
+                      event.preventDefault();
+                        pic.src = "image/loading.gif";
+                        // message_back.style.background="#eaf2ff";
+                        document.getElementById("speech").disabled = true;
+                      showAlert();
+
+                      $("#speech").val("");
+  
+                    }
+                  });
+
+
+                  };
+
+                 function showAlert(event) {
+
+
+                var text = $speechInput.val();
+                $.ajax({
+                type: "POST",
+                url: baseUrl + "query?v=20150910",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                headers: {
+                    "Authorization": "Bearer " + accessToken
+                },
+                data: JSON.stringify({ query: text, lang: "en", sessionId: "somerandomthing" }),
+                success: function(data) {
+
+    
+                    var respText = data.result.fulfillment.speech;
+                    console.log("Respuesta: " + respText);
+                    setResponse(respText);
+                },
+                error: function() {
+
+
+                    setResponse("Internal Server Error");
+
+                }
+                });
+                 setResponse("Thinking...");
+
+
+                }
+
+                function setResponse(val) {
+                    // $("#response").text(val);
+
+                    $("#response").text("");
+                    var text_to_send= $speechOutput.val();
+                    myFunction(val);
+
+
+                }
+
+
+
+            //------------------------Api.Ai Portion Ends Here--------------------------------------------------
+
+
+    </script>
+
+    </head>
+    <body onload="initElement();" background="image/screen.png">
+
+     <div class="outer" >
+      <div class="middle">
+        <div class="inner" >
+
+
+                 <div class="card" style="width: 70%; margin: 0 auto; background-color: white; border-radius: 20px; padding: 10%;">
+
+                   <!--  <div><h1 style="text-align: center; ">CHAT BOT</h1></div> -->
+
+                    <div><img src="image/citibot.png" style="width:90%;display:block; margin:0 auto; "></div>
+                    <br>
+                    <div style="margin: 0 auto; padding-top: 15%; padding-bottom: 1%;">
+                        <img id="pic" src="image/normal.gif" alt="Loding" style="width: 15%; height: auto; ">
+
+                    </div>
+                    
+                    <div class="card-block">
+
+
+
+                                <div id="response" style="padding: 10%; margin: 10%; margin: 0 auto; text-align: center; background-color: white; border-radius:20px; ">
+                                  <!-- <p style="margin: 0 auto; text-align: center;">This is my DIV element.</p> -->
+                                </div> 
+
+
+                          <div class="form-group" style="width: 100%; margin: 0 auto;">
+                           
+                             <input class="form-control" id="speech" type="text" placeholder="Talk to me" style="border-radius: 20px; margin-top: 10%; padding-left: 10%;">
+                          </div>
+
+                    </div>
+
+                  </div>
+
+
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
